@@ -100,22 +100,74 @@ if __name__ == '__main__':
     import numpy as np
     from ctypes import *
     from sklearn.svm import SVC
+    import argparse
+    import os.path
+    import sys
+
     CWrapper = CDLL('./lib/libCWrapper.so')
     CWrapper.FeatureRead.restype = c_double
 
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('-max_lvl',
+                        default=5,
+                        type=int,
+                        dest='LEVEL',
+                        help='The maximum tree level. (default:5)')
+    parser.add_argument('-g',
+                        default='false',
+                        dest='GEN',
+                        help='Generate new data. {True|False}(default:False)')
+    parser.add_argument('-d',
+                        default='./data/',
+                        dest='DATA_PATH',
+                        help='Training and testing data path. (default:./data/)')
+    parser.add_argument('-train',
+                        default=5000,
+                        type=int,
+                        dest='TRAIN_SIZE',
+                        help='Number of Training data. (default:5000)')
+    parser.add_argument('-test',
+                        default=100,
+                        type=int,
+                        dest='TEST_SIZE',
+                        help='Number of Testing data. (default:100)')
+
+    args = parser.parse_args()
+
+    GEN_NEW   = True if args.GEN.upper() == 'TRUE' else False
+    DATA_PATH = args.DATA_PATH
+
+    if GEN_NEW:
+        train_x, train_t = GenBatch(args.TRAIN_SIZE)
+        test_x, test_t = GenBatch(args.TEST_SIZE)
+        np.save(DATA_PATH + 'train_x.npy', train_x)
+        np.save(DATA_PATH + 'train_t.npy', train_t)
+        np.save(DATA_PATH + 'test_x.npy', test_x)
+        np.save(DATA_PATH + 'test_t', test_t)
+    else:
+        if not os.path.exists(DATA_PATH + 'train_x.npy') or \
+           not os.path.exists(DATA_PATH + 'train_t.npy') or \
+           not os.path.exists(DATA_PATH + 'test_x.npy') or \
+           not os.path.exists(DATA_PATH + 'test_t.npy'):
+            print("File is not exist.")
+            sys.exit() 
+        train_x = np.load(DATA_PATH + 'train_x.npy')
+        train_t = np.load(DATA_PATH + 'train_t.npy')
+        test_x  = np.load(DATA_PATH + 'test_x.npy')
+        test_t  = np.load(DATA_PATH + 'test_t.npy')
+
     print('========== Decision Tree ==========')
     # Build training data
-    train_x, train_t = GenBatch(10000)
     c_train_x = TwoDList2VecFea(train_x)
     c_train_t = List2VecInt(train_t)
 
     # Build testing data
-    test_x, test_t = GenBatch(10000)
     c_test_x = TwoDList2VecFea(test_x)
     c_test_t = List2VecInt(test_t)
 
     # Build decision tree model
-    DT = CWrapper.newDecisionTree(c_double(.90), 4)
+    DT = CWrapper.newDecisionTree(c_double(.90), args.LEVEL)
 
     # Training
     CWrapper.fit(DT, c_train_x, c_train_t)

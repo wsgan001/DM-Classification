@@ -208,6 +208,11 @@ Node* DecisionTree::_build_tree(const std::vector<std::vector<double> >& c, cons
     tree_node->right_ptr = _build_tree(r_c, r_idx, x, t, ++id, depth + 1);
     tree_node->l_cls     = l_cnt[0] < l_cnt[1] ? 1 : -1;
     tree_node->r_cls     = r_cnt[0] < r_cnt[1] ? 1 : -1;
+    if (!tree_node->left_ptr && !tree_node->right_ptr && tree_node->l_cls == tree_node->r_cls) {
+        --id;
+        delete tree_node;
+        return NULL;
+    }
     if (tree_node->left_ptr)  tree_node->l_id = tree_node->left_ptr->id;
     if (tree_node->right_ptr) tree_node->r_id = tree_node->right_ptr->id;
     return tree_node;
