@@ -186,6 +186,7 @@ $ python main.py
   ```
 
 - Training
+
   | Training  | Value   |
   | ---       | ---     |
   | Accuracy  | 0.97000 |
@@ -193,6 +194,7 @@ $ python main.py
   | Recall    | 0.96000 |
 
 - Testing
+
   | Testing   | Value   |
   | ---       | ---     |
   | Accuracy  | 0.91000 |
@@ -207,6 +209,7 @@ $ python main.py
 - 這實驗除了嘗試Decision Tree以外，另外我還使用了SVM來作對照，我們是採用scikit-learn所提供之SVC進行訓練其中 $kenel='rbf'$、$\gamma='scale'$，訓練出來的精準度如下:
 
 - Training
+
   | Training  | Value   |
   | ---       | ---     |
   | Accuracy  | 0.94492 |
@@ -214,6 +217,7 @@ $ python main.py
   | Recall    | 0.92849 |
 
 - Testing
+
   | Testing   | Value   |
   | ---       | ---     |
   | Accuracy  | 0.89000 |
